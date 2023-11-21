@@ -2,60 +2,71 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from userInfo import UserInfoLayout
+from userInfo import UserInfoWidget
+from paintingBoard import PaintingBoardWidget
+from chatBoard import ChatBoardWidget
+from buttons import ButtonBoxWidget
+from sendMessage import SendMessageWidget
 
 class MyApp(QWidget):
 
     def __init__(self):
         super().__init__()
+
+        self.userName = '홍길동'
+        self.userPosition = 'host'
+
+        if self.userPosition != 'host':
+            self.userState = 'Not Ready'
+        else:
+            self.userState = 'Host'
+
         self.initUI()
 
     def initUI(self):
         hBox_gameBoard = QHBoxLayout() # 제일 바탕이 되는 레이아웃. vertical layout 두개로 구성됨.
         vBox_subGameBoard_1 = QVBoxLayout() # verical layout 1: 유저리스트와 그림판이 들어가는 레이아웃
-        hBox_userList = QHBoxLayout() # 유저리스트. 최대 8명 정도가 적당해보이고, ready 표시나 점수가 같이 나오면 좋을 듯.
-        hBox_paintingBoard = QHBoxLayout() # 그림판
-        vBox_userInfo = QVBoxLayout()
-
+        vBox_subGameBoard_1.setAlignment(Qt.AlignBottom)
         vBox_subGameBoard_2 = QVBoxLayout() # verical layout 2: 로고, 채팅창, 시작(준비)버튼, 나가기버튼이 있는 레이아웃
-        hBox_brandLogo = QHBoxLayout()
-        hBox_chatBoard = QHBoxLayout()
-        hBox_start_or_exit = QHBoxLayout()
+        vBox_subGameBoard_2.setAlignment(Qt.AlignTop)
+        
+        hBox_userList = QHBoxLayout()
 
-        hBox_userList.addLayout(UserInfoLayout())
-        hBox_userList.addLayout(UserInfoLayout())
-        hBox_userList.addLayout(UserInfoLayout())
-        hBox_userList.addLayout(UserInfoLayout())
-        hBox_userList.addLayout(UserInfoLayout())
-        hBox_userList.addLayout(UserInfoLayout())
-        hBox_userList.addLayout(UserInfoLayout())
-        hBox_userList.addLayout(UserInfoLayout())
+        # 3명 들어왔다고 가정
+        userList = [UserInfoWidget('구형모', 'guest', 'Ready'), UserInfoWidget('곽다윗', 'guest', 'Ready'), UserInfoWidget('백현식', 'guest', 'Ready')]
+        for user in userList:
+            hBox_userList.addLayout(user)
+        hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState))
 
         vBox_subGameBoard_1.addLayout(hBox_userList)
-        vBox_subGameBoard_1.addLayout(hBox_paintingBoard)
+        vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
 
-        vBox_subGameBoard_2.addLayout(hBox_brandLogo)
-        vBox_subGameBoard_2.addLayout(hBox_chatBoard)
-        vBox_subGameBoard_2.addLayout(hBox_start_or_exit)
+        logo = QLabel()
+        logo.setPixmap(QPixmap('front-end/assets/logo.png'))
+        vBox_subGameBoard_2.addWidget(logo)
+        vBox_subGameBoard_2.addWidget(ChatBoardWidget())
+        vBox_subGameBoard_2.addWidget(SendMessageWidget())
+        vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
 
         hBox_gameBoard.addLayout(vBox_subGameBoard_1)
         hBox_gameBoard.addLayout(vBox_subGameBoard_2)
-        
-        # hbox = QHBoxLayout()
-        # hbox.addStretch(1)
-        # hbox.addWidget(okButton)
-        # hbox.addWidget(cancelButton)
-        # hbox.addStretch(1)
-
-        # vbox = QVBoxLayout()
-        # vbox.addStretch(3)
-        # vbox.addLayout(hbox)
-        # vbox.addStretch(1)
-
+       
         self.setLayout(hBox_gameBoard)
         self.resize(1400, 800)
         self.show()
 
+    def readyButtonClick(self):
+        if self.userState == 'Ready':
+            self.userState = 'Not Ready'
+        else:
+            self.userState = 'Ready'
+
+        print(self.userState)
+        # 바뀐 정보에 따라 화면 갱신
+        # self.update() ???? 뭐로 해야할지 모르겠음
+
+    def exitButtonClick(self):
+        print('게임종료')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
