@@ -7,6 +7,7 @@ from paintingBoard import PaintingBoardWidget
 from chatBoard import ChatBoardWidget
 from buttons import ButtonBoxWidget
 from sendMessage import SendMessageWidget
+from joinCreateRoom import JoinCreateRoom
 
 class MyApp(QWidget):
 
@@ -37,6 +38,8 @@ class MyApp(QWidget):
         for user in userList:
             hBox_userList.addLayout(user)
         hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState))
+
+        vBox_subGameBoard_1.addLayout(JoinCreateRoom())
 
         vBox_subGameBoard_1.addLayout(hBox_userList)
         vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
