@@ -50,7 +50,7 @@ class ServerSocket(QObject):
 
     def listen(self, server):
         while self.bListen:
-            server.listen(5)
+            server.listen(4)
             try:
                 client, addr = server.accept()
             except Exception as e:

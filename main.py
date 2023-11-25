@@ -8,7 +8,7 @@ from chatBoard import ChatBoardWidget
 from buttons import ButtonBoxWidget
 from sendMessage import SendMessageWidget
 from joinCreateRoom import JoinCreateRoom
-from server import server
+from backend import server, client
 import socket
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -30,7 +30,9 @@ class MyApp(QWidget):
         self.ip = socket.gethostbyname(socket.gethostname())
         self.port = 3000
 
-        self.joinCreateRoom = JoinCreateRoom(lambda: self.server.start(self.ip, self.port))
+        self.client = client.ClientSocket(self)
+
+        self.joinCreateRoom = JoinCreateRoom(lambda: self.server.start(self.ip, self.port), lambda ip: self.client.start(ip))
 
         self.initUI()
 
