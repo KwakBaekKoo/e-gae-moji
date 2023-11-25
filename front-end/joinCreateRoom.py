@@ -6,40 +6,39 @@ class JoinCreateRoom(QVBoxLayout):
     def __init__(self, onStartServer):
         super().__init__()
 
-
         self.onStartServer = onStartServer
         self.server_ip = ""
 
         self.initUI()
 
     def initUI(self):
-        layout_create_room = QVBoxLayout()
+        layoutCreateRoom = QVBoxLayout()
 
-        label_create_room = QLabel()
-        label_create_room.setText("Server IP: {}".format(self.server_ip))
-        layout_create_room.addWidget(label_create_room)
+        labelCreateRoom = QLabel()
+        labelCreateRoom.setText("Server IP: {}".format(self.server_ip))
+        layoutCreateRoom.addWidget(labelCreateRoom)
 
         button_create_room = QPushButton("Create")
-        layout_create_room.addWidget(button_create_room)
+        button_create_room.clicked.connect(self.onStartServer)
+        layoutCreateRoom.addWidget(button_create_room)
 
-        layout_join_room = QHBoxLayout()
+        layoutJoinRoom = QHBoxLayout()
 
-        edit_join_room = QLineEdit()
-        edit_join_room.setPlaceholderText("192.168.0.1:3000")
+        editJoinRoom = QLineEdit()
+        editJoinRoom.setPlaceholderText("192.168.0.1:3000")
 
-        layout_join_room.addWidget(edit_join_room)
-        layout_join_room.addWidget(QPushButton('Join'))
+        layoutJoinRoom.addWidget(editJoinRoom)
+        layoutJoinRoom.addWidget(QPushButton('Join'))
 
-        groupbox_create_room = QGroupBox("Create Room")
-        groupbox_create_room.setLayout(layout_create_room)
-        groupbox_create_room.setFixedWidth(300)
-        self.addWidget(groupbox_create_room)
+        groupboxCreateRoom = QGroupBox("Create Room")
+        groupboxCreateRoom.setLayout(layoutCreateRoom)
+        groupboxCreateRoom.setFixedWidth(300)
+        self.addWidget(groupboxCreateRoom)
 
-        groupbox_join_room = QGroupBox("Join Room")
-        groupbox_join_room.setLayout(layout_join_room)
-        groupbox_join_room.setFixedWidth(300)
-        self.addWidget(groupbox_join_room)
+        groupboxJoinRoom = QGroupBox("Join Room")
+        groupboxJoinRoom.setLayout(layoutJoinRoom)
+        groupboxJoinRoom.setFixedWidth(300)
+        self.addWidget(groupboxJoinRoom)
 
     def onClickCreateServer(self):
         self.server_ip = self.onStartServer()
-

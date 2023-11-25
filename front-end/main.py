@@ -53,7 +53,7 @@ class MyApp(QWidget):
         logo = QLabel()
         logo.setPixmap(QPixmap('assets/logo.png'))
         vBox_subGameBoard_2.addWidget(logo)
-        vBox_subGameBoard_2.addLayout(JoinCreateRoom(self.server.start(self.ip, self.port)))
+        vBox_subGameBoard_2.addLayout(JoinCreateRoom(lambda: self.server.start(self.ip, self.port)))
         vBox_subGameBoard_2.addWidget(ChatBoardWidget())
         vBox_subGameBoard_2.addWidget(SendMessageWidget())
         vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
