@@ -39,14 +39,14 @@ class MyApp(QWidget):
             hBox_userList.addLayout(user)
         hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState))
 
-        vBox_subGameBoard_1.addLayout(JoinCreateRoom())
 
         vBox_subGameBoard_1.addLayout(hBox_userList)
         vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
 
         logo = QLabel()
-        logo.setPixmap(QPixmap('front-end/assets/logo.png'))
+        logo.setPixmap(QPixmap('assets/logo.png'))
         vBox_subGameBoard_2.addWidget(logo)
+        vBox_subGameBoard_2.addLayout(JoinCreateRoom())
         vBox_subGameBoard_2.addWidget(ChatBoardWidget())
         vBox_subGameBoard_2.addWidget(SendMessageWidget())
         vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))

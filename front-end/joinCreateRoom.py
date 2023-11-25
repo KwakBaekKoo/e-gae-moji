@@ -21,18 +21,19 @@ class JoinCreateRoom(QVBoxLayout):
 
         edit_join_room = QLineEdit()
         edit_join_room.setPlaceholderText("192.168.0.1:3000")
-        edit_join_room.setMaximumWidth(600)
 
         layout_join_room.addWidget(edit_join_room)
-        layout_join_room.addWidget(QPushButton('Join Room'))
+        layout_join_room.addWidget(QPushButton('Join'))
 
         groupbox_create_room = QGroupBox("Create Room")
         groupbox_create_room.setLayout(layout_create_room)
+        groupbox_create_room.setFixedWidth(300)
         self.addWidget(groupbox_create_room)
 
-        groupbox_join_room = QGroupBox("Join")
+        groupbox_join_room = QGroupBox("Join Room")
         groupbox_join_room.setLayout(layout_join_room)
+        groupbox_join_room.setFixedWidth(300)
         self.addWidget(groupbox_join_room)
 
-        self.setSpacing(50)
+        # self.setSpacing(50)
 
