@@ -3,6 +3,7 @@ from socket import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 
 
+
 class ServerSocket(QObject):
     update_signal = pyqtSignal(tuple, bool)
     recv_signal = pyqtSignal(str)

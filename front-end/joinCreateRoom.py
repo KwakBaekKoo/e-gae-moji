@@ -3,15 +3,20 @@ from PyQt5.QtWidgets import *
 
 class JoinCreateRoom(QVBoxLayout):
 
-    def __init__(self):
+    def __init__(self, onStartServer):
         super().__init__()
+
+
+        self.onStartServer = onStartServer
+        self.server_ip = ""
+
         self.initUI()
 
     def initUI(self):
         layout_create_room = QVBoxLayout()
 
         label_create_room = QLabel()
-        label_create_room.setText("Server IP: ")
+        label_create_room.setText("Server IP: {}".format(self.server_ip))
         layout_create_room.addWidget(label_create_room)
 
         button_create_room = QPushButton("Create")
@@ -35,5 +40,6 @@ class JoinCreateRoom(QVBoxLayout):
         groupbox_join_room.setFixedWidth(300)
         self.addWidget(groupbox_join_room)
 
-        # self.setSpacing(50)
+    def onClickCreateServer(self):
+        self.server_ip = self.onStartServer()
 
