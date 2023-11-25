@@ -9,14 +9,16 @@ class JoinCreateRoom(QVBoxLayout):
         self.onStartServer = onStartServer
         self.server_ip = ""
 
+        self.labelCreateRoom = None
+
         self.initUI()
 
     def initUI(self):
         layoutCreateRoom = QVBoxLayout()
 
-        labelCreateRoom = QLabel()
-        labelCreateRoom.setText("Server IP: {}".format(self.server_ip))
-        layoutCreateRoom.addWidget(labelCreateRoom)
+        self.labelCreateRoom = QLabel()
+        self.labelCreateRoom.setText("Server IP: {}".format(self.server_ip))
+        layoutCreateRoom.addWidget(self.labelCreateRoom)
 
         button_create_room = QPushButton("Create")
         button_create_room.clicked.connect(self.onStartServer)
@@ -42,3 +44,8 @@ class JoinCreateRoom(QVBoxLayout):
 
     def onClickCreateServer(self):
         self.server_ip = self.onStartServer()
+        print("Server IP: {}".format(self.server_ip))
+
+    def onServerCreated(self, ip):
+        self.labelCreateRoom.setText("Server IP: {}".format(ip))
+

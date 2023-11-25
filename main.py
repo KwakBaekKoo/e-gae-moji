@@ -11,6 +11,7 @@ from joinCreateRoom import JoinCreateRoom
 from server import server
 import socket
 
+QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 class MyApp(QWidget):
 
@@ -28,6 +29,8 @@ class MyApp(QWidget):
         self.server = server.ServerSocket(self)
         self.ip = socket.gethostbyname(socket.gethostname())
         self.port = 3000
+
+        self.joinCreateRoom = JoinCreateRoom(lambda: self.server.start(self.ip, self.port))
 
         self.initUI()
 
@@ -53,7 +56,7 @@ class MyApp(QWidget):
         logo = QLabel()
         logo.setPixmap(QPixmap('assets/logo.png'))
         vBox_subGameBoard_2.addWidget(logo)
-        vBox_subGameBoard_2.addLayout(JoinCreateRoom(lambda: self.server.start(self.ip, self.port)))
+        vBox_subGameBoard_2.addLayout(self.joinCreateRoom)
         vBox_subGameBoard_2.addWidget(ChatBoardWidget())
         vBox_subGameBoard_2.addWidget(SendMessageWidget())
         vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
@@ -77,6 +80,9 @@ class MyApp(QWidget):
 
     def exitButtonClick(self):
         print('게임종료')
+
+    def startServer(self,ip):
+        self.joinCreateRoom.onServerCreated(ip)
 
     def updateClient(self, addr, isConnect=False):
         print("update client:", addr, end=" ")

@@ -6,6 +6,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 class ServerSocket(QObject):
     update_signal = pyqtSignal(tuple, bool)
     recv_signal = pyqtSignal(str)
+    start_signal = pyqtSignal(str)
 
     def __init__(self, parent):
         super().__init__()
@@ -19,6 +20,7 @@ class ServerSocket(QObject):
 
         self.update_signal.connect(self.parent.updateClient)
         self.recv_signal.connect(self.parent.updateMsg)
+        self.start_signal.connect(self.parent.startServer)
 
     def __del__(self):
         self.stop()
@@ -37,6 +39,7 @@ class ServerSocket(QObject):
             self.t.start()
             print('Server Listening...')
 
+        self.start_signal.emit("{}:{}".format(ip, port))
         return True
 
     def stop(self):
