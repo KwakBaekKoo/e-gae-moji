@@ -28,7 +28,7 @@ class MyApp(QWidget):
 
         self.server = server.ServerSocket(self)
         self.ip = socket.gethostbyname(socket.gethostname())
-        self.port = 3000
+        self.port = 4001
 
         self.client = client.ClientSocket(self)
 
@@ -60,7 +60,7 @@ class MyApp(QWidget):
         vBox_subGameBoard_2.addWidget(logo)
         vBox_subGameBoard_2.addLayout(self.joinCreateRoom)
         vBox_subGameBoard_2.addWidget(ChatBoardWidget())
-        vBox_subGameBoard_2.addWidget(SendMessageWidget())
+        vBox_subGameBoard_2.addWidget(SendMessageWidget(self.sendMsg))
         vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
 
         hBox_gameBoard.addLayout(vBox_subGameBoard_1)
@@ -79,6 +79,10 @@ class MyApp(QWidget):
         print(self.userState)
         # 바뀐 정보에 따라 화면 갱신
         # self.update() ???? 뭐로 해야할지 모르겠음
+
+    def sendMsg(self,msg):
+        self.server.send(msg)
+        self.client.send(msg)
 
     def exitButtonClick(self):
         print('게임종료')

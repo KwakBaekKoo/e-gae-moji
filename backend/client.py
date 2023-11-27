@@ -15,6 +15,10 @@ class ClientSocket(QObject):
         clientThread = ClientThread(ip)
         clientThread.start()
 
+    def send(self,msg):
+        global tcpClient
+        tcpClient.send(msg.encode())
+
 
 class ClientThread(Thread):
     def __init__(self, ip):
