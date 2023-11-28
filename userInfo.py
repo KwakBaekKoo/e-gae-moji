@@ -18,18 +18,27 @@ class UserInfoWidget(QVBoxLayout):
         userName.setContentsMargins(0, 20, 0, 0)
 
         if self.position == 'host':
-            readyOrNot = QLabel('Host')
-            readyOrNot.setStyleSheet('color: blue')
+            self.readyOrNot = QLabel('Host')
+            self.readyOrNot.setStyleSheet('color: blue')
         else:
-            readyOrNot = ReadyOrNot(self.status)
+            self.readyOrNot = QLabel()
+            self.setStatus(self.status)
             
         self.addWidget(userName)
         self.addLayout(userImage)
-        self.addWidget(readyOrNot)
+        self.addWidget(self.readyOrNot)
 
         self.setAlignment(userImage, Qt.AlignCenter)
         self.setAlignment(userName, Qt.AlignCenter)
-        self.setAlignment(readyOrNot, Qt.AlignCenter)
+        self.setAlignment(self.readyOrNot, Qt.AlignCenter)
+
+    def setStatus(self, status):
+        self.status = status
+        self.readyOrNot.setText(self.status)
+        if self.status == 'Ready':
+            self.readyOrNot.setStyleSheet('color: green')
+        else:
+            self.readyOrNot.setStyleSheet('color: red')
 
 class UserImage(QHBoxLayout):
 
