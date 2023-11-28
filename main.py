@@ -78,6 +78,7 @@ class MyApp(QWidget):
         else:
             self.userState = 'Ready'
             self.hBox_userList.itemAt(0).setStatus('Ready')
+        # 서버에게 준비완료 메시지 보내기
 
     def sendMsg(self, msg):
         self.server.send(msg)
