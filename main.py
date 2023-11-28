@@ -60,7 +60,8 @@ class MyApp(QWidget):
         logo.setPixmap(QPixmap('assets/logo.png'))
         self.vBox_subGameBoard_2.addWidget(logo)
         self.vBox_subGameBoard_2.addLayout(self.joinCreateRoom)
-        self.vBox_subGameBoard_2.addWidget(ChatBoardWidget())
+        self.chatBoard = ChatBoardWidget(self.userName)
+        self.vBox_subGameBoard_2.addWidget(self.chatBoard)
         self.vBox_subGameBoard_2.addWidget(SendMessageWidget(self.sendMsg))
         self.vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
 
@@ -97,6 +98,7 @@ class MyApp(QWidget):
 
     def updateMsg(self, msg):
         print("update msg:", msg, end=" ")
+        self.chatBoard.addMessage(msg)
         None
 
 if __name__ == '__main__':
