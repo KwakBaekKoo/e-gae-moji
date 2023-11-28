@@ -38,7 +38,7 @@ class UserImage(QHBoxLayout):
         self.initUI()
 
     def initUI(self):
-        pixmap = QPixmap('front-end/assets/user.png')
+        pixmap = QPixmap('assets/user.png')
         user_img = QLabel()
         user_img.setPixmap(pixmap)
         self.addWidget(user_img)
