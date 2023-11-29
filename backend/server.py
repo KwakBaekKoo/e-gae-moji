@@ -83,7 +83,6 @@ class ServerSocket(QObject):
                 if msg:
                     self.send(msg)
                     self.recv_signal.emit(msg)
-                    print('[RECV]:', addr, msg)
 
         self.removeClient(addr, client)
 

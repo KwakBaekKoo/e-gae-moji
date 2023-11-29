@@ -5,7 +5,6 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 tcpClient = None
 
-
 class ClientSocket(QObject):
     recv_signal = pyqtSignal(str)
 
@@ -30,7 +29,6 @@ class ClientSocket(QObject):
             tcpClient.send(msg.encode())
 
     def receive(self, msg):
-        print(msg)
         self.recv_signal.emit(msg)
 
 
@@ -55,7 +53,6 @@ class ClientThread(Thread):
             else:
                 msg = str(recv, encoding='utf-8')
                 if msg:
-                    print('[RECV]:', msg)
                     self.receive(msg)
 
     # data = tcpClient.recv(BUFFER_SIZE)
