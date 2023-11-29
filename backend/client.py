@@ -17,7 +17,8 @@ class ClientSocket(QObject):
 
     def send(self,msg):
         global tcpClient
-        tcpClient.send(msg.encode())
+        if tcpClient:
+            tcpClient.send(msg.encode())
 
 
 class ClientThread(Thread):

@@ -13,6 +13,7 @@ import socket
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
+
 class MyApp(QWidget):
 
     def __init__(self):
@@ -32,7 +33,8 @@ class MyApp(QWidget):
 
         self.client = client.ClientSocket(self)
 
-        self.joinCreateRoom = JoinCreateRoom(lambda: self.server.start(self.ip, self.port), lambda ip: self.client.start(ip))
+        self.joinCreateRoom = JoinCreateRoom(lambda: self.server.start(self.ip, self.port),
+                                             lambda ip: self.client.start(ip))
 
         self.initUI()
 
@@ -43,17 +45,17 @@ class MyApp(QWidget):
         self.vBox_subGameBoard_1.setAlignment(Qt.AlignBottom)
         self.vBox_subGameBoard_2.setAlignment(Qt.AlignTop)
 
-        self.hBox_userList = QHBoxLayout() # 유저정보를 나열하기 위한 레이아웃
+        self.hBox_userList = QHBoxLayout()  # 유저정보를 나열하기 위한 레이아웃
         self.vBox_subGameBoard_1.addLayout(self.hBox_userList)
 
         # 3명 들어왔다고 가정
         userList = [UserInfoWidget('구형모', 'host', 'Ready'), UserInfoWidget('곽다윗', 'guest', 'Ready'),
                     UserInfoWidget('백현식', 'guest', 'Ready')]
-        self.hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState)) # 내정보 먼저 추가
+        self.hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState))  # 내정보 먼저 추가
         # 나머지 유저들의 정보 추가
         for user in userList:
             self.hBox_userList.addLayout(user)
-        
+
         self.vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
 
         logo = QLabel()
@@ -63,7 +65,8 @@ class MyApp(QWidget):
         self.chatBoard = ChatBoardWidget(self.userName)
         self.vBox_subGameBoard_2.addWidget(self.chatBoard)
         self.vBox_subGameBoard_2.addWidget(SendMessageWidget(self.sendMsg))
-        self.vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
+        self.vBox_subGameBoard_2.addLayout(
+            ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
 
         self.hBox_gameBoard.addLayout(self.vBox_subGameBoard_1)
         self.hBox_gameBoard.addLayout(self.vBox_subGameBoard_2)
@@ -82,8 +85,11 @@ class MyApp(QWidget):
         # 서버에게 준비완료 메시지 보내기
 
     def sendMsg(self, msg):
-        self.server.send(msg)
-        self.client.send(msg)
+        if self.server.send:
+            self.chatBoard.addMessage(msg)
+            self.server.send(msg)
+        if self.client.send:
+            self.client.send(msg)
 
     def exitButtonClick(self):
         # 서버와 연결 끊고 창 닫기
@@ -100,6 +106,7 @@ class MyApp(QWidget):
         print("update msg:", msg, end=" ")
         self.chatBoard.addMessage(msg)
         None
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
