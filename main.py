@@ -42,16 +42,9 @@ class MyApp(QWidget):
         self.vBox_subGameBoard_1.setAlignment(Qt.AlignBottom)
         self.vBox_subGameBoard_2.setAlignment(Qt.AlignTop)
 
-        self.hBox_userList = QHBoxLayout()  # 유저정보를 나열하기 위한 레이아웃
-        self.vBox_subGameBoard_1.addLayout(self.hBox_userList)
-
-        # 3명 들어왔다고 가정
-        # userList = [UserInfoWidget('구형모', 'host', 'Ready'), UserInfoWidget('곽다윗', 'guest', 'Ready'),
-        #             UserInfoWidget('백현식', 'guest', 'Ready')]
-        # self.hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState))  # 내정보 먼저 추가
-        # # 나머지 유저들의 정보 추가
-        # for user in userList:
-        #     self.hBox_userList.addLayout(user)
+        self.container_userList = QWidget()
+        self.container_userList.setFixedHeight(175)
+        self.vBox_subGameBoard_1.addWidget(self.container_userList)
 
         self.vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
 
@@ -103,10 +96,11 @@ class MyApp(QWidget):
     def onUserList(self, users):
         userList = [UserInfoWidget(i) for i in list(users)]
 
-        self.clearLayout(self.hBox_userList)
+        hBox_userList = QHBoxLayout()
         for user in userList:
-            self.hBox_userList.addLayout(user)
-        print("user list",users)
+            hBox_userList.addLayout(user)
+
+        self.container_userList.setLayout(hBox_userList)
 
     def onCorrectAnswer(self, user):
         print("Correct Answer", user, end=" ")
@@ -118,16 +112,6 @@ class MyApp(QWidget):
 
     def onDraw(self, data):
         print("Draw", data)
-
-    def clearLayout(self, layout):
-        if layout is not None:
-            while layout.count():
-                item = layout.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
-                else:
-                    self.clearLayout(item.layout())
 
 
 
