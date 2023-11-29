@@ -78,10 +78,9 @@ class MyApp(QWidget):
         
     def sendMsg(self, msg):
         if self.server.isInitialized:
-            self.chatBoard.addMessage(msg)
-            self.server.send(msg)
+            self.server.sendMessage(self.userName, msg)
         if self.client.isInitialized:
-            self.client.send(msg)
+            self.client.sendMessage(self.userName, msg)
 
     def exitButtonClick(self):
         # 서버와 연결 끊고 창 닫기

@@ -1,5 +1,6 @@
 from threading import Thread
 import socket
+import json
 from PyQt5.QtCore import pyqtSignal, QObject
 
 tcpClient = None
@@ -18,6 +19,10 @@ class ClientSocket(QObject):
         clientThread = ClientThread(ip, self.receive)
         clientThread.start()
         self.isInitialized = True
+
+    def sendMessage(self, user, message):
+        parcel = {"op": "message", "user": user, "data": message}
+        self.send(json.dumps(parcel))
 
     def send(self,msg):
         global tcpClient

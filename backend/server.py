@@ -17,7 +17,7 @@ class ServerSocket(QObject):
         self.parent = parent
         self.bListen = False
         self.clients = []
-        self.ip = []
+        self.clientsName = []
         self.threads = []
 
         self.update_signal.connect(self.parent.updateClient)
@@ -62,7 +62,7 @@ class ServerSocket(QObject):
                 break
             else:
                 self.clients.append(client)
-                self.ip.append(addr[1])
+                self.clientsName.append("Guest {}".format(addr[1]))
                 self.updateUser()
                 t = Thread(target=self.receive, args=(addr, client))
                 self.threads.append(t)
@@ -88,9 +88,15 @@ class ServerSocket(QObject):
         self.removeClient(addr, client)
 
     def updateUser(self):
-        parcel = {"op": "user_list", "user": json.dumps(["Host", *("Guest {}".format(i) for i in enumerate(self.ip))])}
+        parcel = {"op": "user_list", "user": json.dumps(["Host", *self.clientsName])}
         self.send(json.dumps(parcel))
         self.recv_signal.emit(json.dumps(parcel))
+
+    def sendMessage(self, user, message):
+        parcel = {"op": "message", "user": user, "data": message}
+        self.send(json.dumps(parcel))
+        self.recv_signal.emit(json.dumps(parcel))
+
 
     def send(self, msg):
         try:
