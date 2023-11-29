@@ -83,13 +83,21 @@ class PaintingBoardWidget(QGraphicsView):
         gb = QGroupBox('지우개')
         left.addWidget(gb)
 
-        hbox = QHBoxLayout()
-        gb.setLayout(hbox)
+        grid2 = QGridLayout()
 
-        self.checkbox  =QCheckBox('지우개 동작')
-        self.checkbox.stateChanged.connect(self.checkClicked)
-        hbox.addWidget(self.checkbox)
+        gb.setLayout(grid2)
+
+        self.eraseActiveCheckBox = QCheckBox('지우개 동작')
+        self.eraseActiveCheckBox.stateChanged.connect(self.checkClicked)
+
+        self.eraseAllButton = QPushButton('전체 지우기')
+        self.eraseAllButton.clicked.connect(self.eraseAllButtonClicked)
+
+        grid2.addWidget(self.eraseActiveCheckBox, 0, 0)
+        grid2.addWidget(self.eraseAllButton, 1, 0)
         left.addStretch(1)
+
+
 
         # 우 레이아웃 박스에 그래픽 뷰 추가
         self.view = CView(self)
@@ -110,6 +118,9 @@ class PaintingBoardWidget(QGraphicsView):
 
     def checkClicked(self):
         pass
+
+    def eraseAllButtonClicked(self):
+        self.view.scene.clear()
 
     def showColorDlg(self):
         # 색상 대화상자 생성
@@ -157,8 +168,8 @@ class CView(QGraphicsView):
         if e.buttons() & Qt.LeftButton:
             self.end = e.pos()
 
-            if self.parent().checkbox.isChecked():
-                pen = QPen(QColor(255,255,255), 10)
+            if self.parent().eraseActiveCheckBox.isChecked():
+                pen = QPen(QColor(255,255,255), 20)
                 path = QPainterPath()
                 path.moveTo(self.start)
                 path.lineTo(self.end)
@@ -217,7 +228,7 @@ class CView(QGraphicsView):
 
     def mouseReleaseEvent(self, e):
         if e.button() == Qt.LeftButton:
-            if self.parent().checkbox.isChecked():
+            if self.parent().eraseActiveCheckBox.isChecked():
                 return None
 
             pen = QPen(self.parent().pencolor, self.parent().combo.currentIndex())
