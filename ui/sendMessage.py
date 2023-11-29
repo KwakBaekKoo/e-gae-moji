@@ -14,7 +14,7 @@ class SendMessageWidget(QLineEdit):
 
     def keyPressEvent(self, e):
         # 엔터 누르면 서버로 메시지 전송
-        if e.key() == Qt.Key_Return:
+        if e.key() == Qt.Key_Return and self.text() != '':
             print('send message to server')
             self.send(self.text())
             self.clear()
