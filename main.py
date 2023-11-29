@@ -19,12 +19,12 @@ class MyApp(QWidget):
         super().__init__()
 
         self.userName = '홍길동'
-        self.userPosition = 'host'
+        self.userPosition = 'guset'
 
-        if self.userPosition != 'host':
-            self.userState = 'Not Ready'
-        else:
+        if self.userPosition == 'host':
             self.userState = 'Host'
+        else:
+            self.userState = 'Not Ready'
 
         self.server = server.ServerSocket(self)
         self.ip = socket.gethostbyname(socket.gethostname())
@@ -37,57 +37,59 @@ class MyApp(QWidget):
         self.initUI()
 
     def initUI(self):
-        hBox_gameBoard = QHBoxLayout()  # 제일 바탕이 되는 레이아웃. vertical layout 두개로 구성됨.
-        vBox_subGameBoard_1 = QVBoxLayout()  # verical layout 1: 유저리스트와 그림판이 들어가는 레이아웃
-        vBox_subGameBoard_1.setAlignment(Qt.AlignBottom)
-        vBox_subGameBoard_2 = QVBoxLayout()  # verical layout 2: 로고, 채팅창, 시작(준비)버튼, 나가기버튼이 있는 레이아웃
-        vBox_subGameBoard_2.setAlignment(Qt.AlignTop)
+        self.hBox_gameBoard = QHBoxLayout()  # 제일 바탕이 되는 레이아웃. vertical layout 두개로 구성됨
+        self.vBox_subGameBoard_1 = QVBoxLayout()  # verical layout 1: 유저리스트와 그림판이 들어가는 레이아웃
+        self.vBox_subGameBoard_2 = QVBoxLayout()  # verical layout 2: 로고, 채팅창, 시작(준비)버튼, 나가기버튼이 있는 레이아웃
+        self.vBox_subGameBoard_1.setAlignment(Qt.AlignBottom)
+        self.vBox_subGameBoard_2.setAlignment(Qt.AlignTop)
 
-        hBox_userList = QHBoxLayout()
+        self.hBox_userList = QHBoxLayout() # 유저정보를 나열하기 위한 레이아웃
+        self.vBox_subGameBoard_1.addLayout(self.hBox_userList)
 
         # 3명 들어왔다고 가정
-        userList = [UserInfoWidget('구형모', 'guest', 'Ready'), UserInfoWidget('곽다윗', 'guest', 'Ready'),
+        userList = [UserInfoWidget('구형모', 'host', 'Ready'), UserInfoWidget('곽다윗', 'guest', 'Ready'),
                     UserInfoWidget('백현식', 'guest', 'Ready')]
+        self.hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState)) # 내정보 먼저 추가
+        # 나머지 유저들의 정보 추가
         for user in userList:
-            hBox_userList.addLayout(user)
-        hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState))
-
-        vBox_subGameBoard_1.addLayout(hBox_userList)
-        vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
+            self.hBox_userList.addLayout(user)
+        
+        self.vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
 
         logo = QLabel()
         logo.setPixmap(QPixmap('assets/logo.png'))
-        vBox_subGameBoard_2.addWidget(logo)
-        vBox_subGameBoard_2.addLayout(self.joinCreateRoom)
-        vBox_subGameBoard_2.addWidget(ChatBoardWidget())
-        vBox_subGameBoard_2.addWidget(SendMessageWidget(self.sendMsg))
-        vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
+        self.vBox_subGameBoard_2.addWidget(logo)
+        self.vBox_subGameBoard_2.addLayout(self.joinCreateRoom)
+        self.chatBoard = ChatBoardWidget(self.userName)
+        self.vBox_subGameBoard_2.addWidget(self.chatBoard)
+        self.vBox_subGameBoard_2.addWidget(SendMessageWidget(self.sendMsg))
+        self.vBox_subGameBoard_2.addLayout(ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
 
-        hBox_gameBoard.addLayout(vBox_subGameBoard_1)
-        hBox_gameBoard.addLayout(vBox_subGameBoard_2)
+        self.hBox_gameBoard.addLayout(self.vBox_subGameBoard_1)
+        self.hBox_gameBoard.addLayout(self.vBox_subGameBoard_2)
 
-        self.setLayout(hBox_gameBoard)
+        self.setLayout(self.hBox_gameBoard)
         self.resize(1400, 800)
         self.show()
 
     def readyButtonClick(self):
         if self.userState == 'Ready':
             self.userState = 'Not Ready'
+            self.hBox_userList.itemAt(0).setStatus('Not Ready')
         else:
             self.userState = 'Ready'
+            self.hBox_userList.itemAt(0).setStatus('Ready')
+        # 서버에게 준비완료 메시지 보내기
 
-        print(self.userState)
-        # 바뀐 정보에 따라 화면 갱신
-        # self.update() ???? 뭐로 해야할지 모르겠음
-
-    def sendMsg(self,msg):
+    def sendMsg(self, msg):
         self.server.send(msg)
         self.client.send(msg)
 
     def exitButtonClick(self):
+        # 서버와 연결 끊고 창 닫기
         print('게임종료')
 
-    def startServer(self,ip):
+    def startServer(self, ip):
         self.joinCreateRoom.onServerCreated(ip)
 
     def updateClient(self, addr, isConnect=False):
@@ -96,8 +98,8 @@ class MyApp(QWidget):
 
     def updateMsg(self, msg):
         print("update msg:", msg, end=" ")
+        self.chatBoard.addMessage(msg)
         None
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
