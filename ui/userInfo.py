@@ -5,40 +5,23 @@ from PyQt5.QtCore import *
 
 class UserInfoWidget(QVBoxLayout):
 
-    def __init__(self, name, position, status):
+    def __init__(self, name):
         super().__init__()
         self.name = name
-        self.position = position
-        self.status = status
         self.initUI()
 
     def initUI(self):        
         userImage = UserImage()
         userName = QLabel(self.name)
-        userName.setContentsMargins(0, 20, 0, 0)
-
-        if self.position == 'host':
-            self.readyOrNot = QLabel('Host')
-            self.readyOrNot.setStyleSheet('color: blue')
-        else:
-            self.readyOrNot = QLabel()
-            self.setStatus(self.status)
+        if self.name == 'Host':
+            userName.setStyleSheet('color: blue')
+        userName.setContentsMargins(0, 0, 0, 20)
             
-        self.addWidget(userName)
         self.addLayout(userImage)
-        self.addWidget(self.readyOrNot)
+        self.addWidget(userName)
 
         self.setAlignment(userImage, Qt.AlignCenter)
         self.setAlignment(userName, Qt.AlignCenter)
-        self.setAlignment(self.readyOrNot, Qt.AlignCenter)
-
-    def setStatus(self, status):
-        self.status = status
-        self.readyOrNot.setText(self.status)
-        if self.status == 'Ready':
-            self.readyOrNot.setStyleSheet('color: green')
-        else:
-            self.readyOrNot.setStyleSheet('color: red')
 
 class UserImage(QHBoxLayout):
 
@@ -51,19 +34,3 @@ class UserImage(QHBoxLayout):
         user_img = QLabel()
         user_img.setPixmap(pixmap)
         self.addWidget(user_img)
-        
-class ReadyOrNot(QLabel):
-
-    def __init__(self, status):
-        super().__init__()
-        self.status = status
-        self.initUI()
-
-    def initUI(self):
-        if self.status == 'Ready':
-            self.setText('Ready')
-            self.setStyleSheet('color: green')
-        else:
-            self.setText('Not Ready')
-            self.setStyleSheet('color: red')
-            self.font().setPointSize(20)

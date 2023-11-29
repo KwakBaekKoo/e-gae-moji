@@ -20,12 +20,7 @@ class MyApp(QWidget):
         super().__init__()
 
         self.userName = '홍길동'
-        self.userPosition = 'guset'
-
-        if self.userPosition == 'host':
-            self.userState = 'Host'
-        else:
-            self.userState = 'Not Ready'
+        self.userPosition = 'host? guest?'
 
         self.server = server.ServerSocket(self)
         self.ip = socket.gethostbyname(socket.gethostname())
@@ -68,7 +63,7 @@ class MyApp(QWidget):
         self.vBox_subGameBoard_2.addWidget(self.chatBoard)
         self.vBox_subGameBoard_2.addWidget(SendMessageWidget(self.sendMsg))
         self.vBox_subGameBoard_2.addLayout(
-            ButtonBoxWidget(self.readyButtonClick, self.exitButtonClick, self.userPosition))
+            ButtonBoxWidget(self.buttonClick, self.exitButtonClick, self.userPosition))
 
         self.hBox_gameBoard.addLayout(self.vBox_subGameBoard_1)
         self.hBox_gameBoard.addLayout(self.vBox_subGameBoard_2)
@@ -77,15 +72,10 @@ class MyApp(QWidget):
         self.resize(1400, 800)
         self.show()
 
-    def readyButtonClick(self):
-        if self.userState == 'Ready':
-            self.userState = 'Not Ready'
-            self.hBox_userList.itemAt(0).setStatus('Not Ready')
-        else:
-            self.userState = 'Ready'
-            self.hBox_userList.itemAt(0).setStatus('Ready')
-        # 서버에게 준비완료 메시지 보내기
-
+    def buttonClick(self):
+        # 무슨 버튼으로 하징
+        print('버튼 클릭')
+        
     def sendMsg(self, msg):
         if self.server.isInitialized:
             self.chatBoard.addMessage(msg)
@@ -112,7 +102,7 @@ class MyApp(QWidget):
         None
 
     def onUserList(self, users):
-        userList = [UserInfoWidget(i, 'host', 'Ready') for i in list(users)]
+        userList = [UserInfoWidget(i) for i in list(users)]
 
         self.clearLayout(self.hBox_userList)
         for user in userList:
