@@ -10,6 +10,7 @@ class ServerSocket(QObject):
 
     def __init__(self, parent):
         super().__init__()
+        self.isInitialized = False
         self.t = None
         self.server = None
         self.parent = parent
@@ -40,6 +41,7 @@ class ServerSocket(QObject):
             print('Server Listening...')
 
         self.start_signal.emit("{}:{}".format(ip, port))
+        self.isInitialized = True
         return True
 
     def stop(self):

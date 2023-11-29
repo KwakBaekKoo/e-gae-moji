@@ -85,10 +85,10 @@ class MyApp(QWidget):
         # 서버에게 준비완료 메시지 보내기
 
     def sendMsg(self, msg):
-        if self.server.send:
+        if self.server.isInitialized:
             self.chatBoard.addMessage(msg)
             self.server.send(msg)
-        if self.client.send:
+        if self.client.isInitialized:
             self.client.send(msg)
 
     def exitButtonClick(self):

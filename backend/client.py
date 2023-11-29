@@ -6,25 +6,34 @@ tcpClient = None
 
 
 class ClientSocket(QObject):
+    recv_signal = pyqtSignal(str)
 
     def __init__(self, parent):
         super().__init__()
+        self.isInitialized = False
         self.parent = parent
+        self.recv_signal.connect(self.parent.updateMsg)
 
     def start(self, ip):
-        clientThread = ClientThread(ip)
+        clientThread = ClientThread(ip, self.receive)
         clientThread.start()
+        self.isInitialized = True
 
     def send(self,msg):
         global tcpClient
         if tcpClient:
             tcpClient.send(msg.encode())
 
+    def receive(self, msg):
+        print(msg)
+        self.recv_signal.emit(msg)
+
 
 class ClientThread(Thread):
-    def __init__(self, ip):
+    def __init__(self, ip,receive):
         Thread.__init__(self)
         self.ip = ip
+        self.receive = receive
 
     def run(self):
         global tcpClient
@@ -42,6 +51,7 @@ class ClientThread(Thread):
                 msg = str(recv, encoding='utf-8')
                 if msg:
                     print('[RECV]:', msg)
+                    self.receive(msg)
 
     # data = tcpClient.recv(BUFFER_SIZE)
     # print(data.decode("utf-8"))
