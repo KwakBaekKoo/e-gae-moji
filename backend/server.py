@@ -1,3 +1,4 @@
+import json
 from threading import Thread
 from socket import *
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -41,12 +42,13 @@ class ServerSocket(QObject):
             print('Server Listening...')
 
         self.start_signal.emit("{}:{}".format(ip, port))
+        self.updateUser()
         self.isInitialized = True
         return True
 
     def stop(self):
         self.bListen = False
-        if hasattr(self, 'server'):
+        if self.server is not None:
             self.server.close()
             print('Server Stop')
 
@@ -60,8 +62,8 @@ class ServerSocket(QObject):
                 break
             else:
                 self.clients.append(client)
-                self.ip.append(addr)
-                self.update_signal.emit(addr, True)
+                self.ip.append(addr[1])
+                self.updateUser()
                 t = Thread(target=self.receive, args=(addr, client))
                 self.threads.append(t)
                 t.start()
@@ -84,6 +86,11 @@ class ServerSocket(QObject):
                     print('[RECV]:', addr, msg)
 
         self.removeClient(addr, client)
+
+    def updateUser(self):
+        parcel = {"op": "user_list", "user": json.dumps(["Host", *("Guest {}".format(i) for i in enumerate(self.ip))])}
+        self.send(json.dumps(parcel))
+        self.recv_signal.emit(json.dumps(parcel))
 
     def send(self, msg):
         try:

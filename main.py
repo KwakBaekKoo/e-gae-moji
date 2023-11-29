@@ -8,7 +8,7 @@ from ui.chatBoard import ChatBoardWidget
 from ui.buttons import ButtonBoxWidget
 from ui.sendMessage import SendMessageWidget
 from ui.joinCreateRoom import JoinCreateRoom
-from backend import client, server
+from backend import client, server, opManager
 import socket
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -36,6 +36,8 @@ class MyApp(QWidget):
         self.joinCreateRoom = JoinCreateRoom(lambda: self.server.start(self.ip, self.port),
                                              lambda ip: self.client.start(ip))
 
+        self.opManager = opManager.OpManager(self.onUserList, self.onChat, self.onDraw, self.onCorrectAnswer)
+
         self.initUI()
 
     def initUI(self):
@@ -49,12 +51,12 @@ class MyApp(QWidget):
         self.vBox_subGameBoard_1.addLayout(self.hBox_userList)
 
         # 3명 들어왔다고 가정
-        userList = [UserInfoWidget('구형모', 'host', 'Ready'), UserInfoWidget('곽다윗', 'guest', 'Ready'),
-                    UserInfoWidget('백현식', 'guest', 'Ready')]
-        self.hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState))  # 내정보 먼저 추가
-        # 나머지 유저들의 정보 추가
-        for user in userList:
-            self.hBox_userList.addLayout(user)
+        # userList = [UserInfoWidget('구형모', 'host', 'Ready'), UserInfoWidget('곽다윗', 'guest', 'Ready'),
+        #             UserInfoWidget('백현식', 'guest', 'Ready')]
+        # self.hBox_userList.addLayout(UserInfoWidget(self.userName, self.userPosition, self.userState))  # 내정보 먼저 추가
+        # # 나머지 유저들의 정보 추가
+        # for user in userList:
+        #     self.hBox_userList.addLayout(user)
 
         self.vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
 
@@ -94,6 +96,8 @@ class MyApp(QWidget):
     def exitButtonClick(self):
         # 서버와 연결 끊고 창 닫기
         print('게임종료')
+        self.server.stop()
+        sys.exit()
 
     def startServer(self, ip):
         self.joinCreateRoom.onServerCreated(ip)
@@ -104,8 +108,37 @@ class MyApp(QWidget):
 
     def updateMsg(self, msg):
         print("update msg:", msg, end=" ")
-        self.chatBoard.addMessage(msg)
+        self.opManager.parse(msg)
         None
+
+    def onUserList(self, users):
+        userList = [UserInfoWidget(i, 'host', 'Ready') for i in list(users)]
+
+        self.clearLayout(self.hBox_userList)
+        for user in userList:
+            self.hBox_userList.addLayout(user)
+        print("user list",users)
+
+    def onCorrectAnswer(self, user):
+        print("Correct Answer", user, end=" ")
+
+    def onChat(self, user, msg):
+
+        self.chatBoard.addMessage("{}: {}".format(user,msg))
+        print("Chat", user, msg, end=" ")
+
+    def onDraw(self, data):
+        print("Draw", data)
+
+    def clearLayout(self, layout):
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()
+                else:
+                    self.clearLayout(item.layout())
 
 
 
