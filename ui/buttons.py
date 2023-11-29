@@ -3,25 +3,25 @@ from PyQt5.QtWidgets import *
 
 class ButtonBoxWidget(QVBoxLayout):
 
-    def __init__(self, readyButtonClick, exitButtonClick, userPosition):
+    def __init__(self, buttonClick, exitButtonClick, userPosition):
         super().__init__()       
-        self.readyButtonClick = readyButtonClick
+        self.buttonClick = buttonClick
         self.exitButtonClick = exitButtonClick
         self.userPosition = userPosition
         self.initUI()
         
     def initUI(self):
         if self.userPosition == 'host':
-            readyButton = QPushButton('Start')
+            button = QPushButton('Start')
         else:
-            readyButton = QPushButton('Ready')
+            button = QPushButton('이거 버튼 뭐로 하지')
         exitButton = QPushButton('Exit')
 
-        readyButton.clicked.connect(self.readyButtonClick)
+        button.clicked.connect(self.buttonClick)
         exitButton.clicked.connect(self.exitButtonClick)
 
-        readyButton.setFixedHeight(50)
+        button.setFixedHeight(50)
         exitButton.setFixedHeight(50)
 
-        self.addWidget(readyButton)
+        self.addWidget(button)
         self.addWidget(exitButton)
