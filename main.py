@@ -2,13 +2,13 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from userInfo import UserInfoWidget
-from paintingBoard import PaintingBoardWidget
-from chatBoard import ChatBoardWidget
-from buttons import ButtonBoxWidget
-from sendMessage import SendMessageWidget
-from joinCreateRoom import JoinCreateRoom
-from backend import server, client
+from ui.userInfo import UserInfoWidget
+from ui.paintingBoard import PaintingBoardWidget
+from ui.chatBoard import ChatBoardWidget
+from ui.buttons import ButtonBoxWidget
+from ui.sendMessage import SendMessageWidget
+from ui.joinCreateRoom import JoinCreateRoom
+from backend import client, server
 import socket
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -106,6 +106,7 @@ class MyApp(QWidget):
         print("update msg:", msg, end=" ")
         self.chatBoard.addMessage(msg)
         None
+
 
 
 if __name__ == '__main__':
