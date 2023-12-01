@@ -19,11 +19,11 @@ class MyApp(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.userName = '홍길동'
         self.userPosition = 'host? guest?'
 
         self.server = server.ServerSocket(self)
         self.ip = socket.gethostbyname(socket.gethostname())
+        self.userName = ""
         self.port = 4001
 
         self.client = client.ClientSocket(self)
@@ -31,7 +31,8 @@ class MyApp(QWidget):
         self.joinCreateRoom = JoinCreateRoom(lambda: self.server.start(self.ip, self.port),
                                              lambda ip: self.client.start(ip))
 
-        self.opManager = opManager.OpManager(self.onUserList, self.onChat, self.onDraw, self.onCorrectAnswer)
+        self.opManager = opManager.OpManager(self.onUserList, self.onChat, self.onDraw, self.onCorrectAnswer,
+                                             self.onUpdateProfile)
 
         self.initUI()
 
@@ -52,7 +53,7 @@ class MyApp(QWidget):
         logo.setPixmap(QPixmap('assets/logo.png'))
         self.vBox_subGameBoard_2.addWidget(logo)
         self.vBox_subGameBoard_2.addLayout(self.joinCreateRoom)
-        self.chatBoard = ChatBoardWidget(self.userName)
+        self.chatBoard = ChatBoardWidget()
         self.vBox_subGameBoard_2.addWidget(self.chatBoard)
         self.vBox_subGameBoard_2.addWidget(SendMessageWidget(self.sendMsg))
         self.vBox_subGameBoard_2.addLayout(
@@ -68,7 +69,7 @@ class MyApp(QWidget):
     def buttonClick(self):
         # 무슨 버튼으로 하징
         print('버튼 클릭')
-        
+
     def sendMsg(self, msg):
         if self.server.isInitialized:
             self.server.sendMessage(self.userName, msg)
@@ -77,21 +78,18 @@ class MyApp(QWidget):
 
     def exitButtonClick(self):
         # 서버와 연결 끊고 창 닫기
-        print('게임종료')
-        self.server.stop()
+        del self.server
+        del self.client
         sys.exit()
 
     def startServer(self, ip):
         self.joinCreateRoom.onServerCreated(ip)
 
-    def updateClient(self, addr, isConnect=False):
-        print("update client:", addr, end=" ")
-        None
-
     def updateMsg(self, msg):
-        print("update msg:", msg, end=" ")
         self.opManager.parse(msg)
-        None
+
+    def onUpdateProfile(self, name):
+        self.userName = name
 
     def onUserList(self, users):
         userList = [UserInfoWidget(i) for i in list(users)]
@@ -106,13 +104,10 @@ class MyApp(QWidget):
         print("Correct Answer", user, end=" ")
 
     def onChat(self, user, msg):
-
-        self.chatBoard.addMessage("{}: {}".format(user,msg))
-        print("Chat", user, msg, end=" ")
+        self.chatBoard.addMessage(user, msg)
 
     def onDraw(self, data):
         print("Draw", data)
-
 
 
 if __name__ == '__main__':

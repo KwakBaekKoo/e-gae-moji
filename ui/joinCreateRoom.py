@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import Qt
 
 
 class JoinCreateRoom(QVBoxLayout):
@@ -20,6 +21,7 @@ class JoinCreateRoom(QVBoxLayout):
 
         self.labelCreateRoom = QLabel()
         self.labelCreateRoom.setText("Server IP: {}".format(self.server_ip))
+        self.labelCreateRoom.setTextInteractionFlags(Qt.TextSelectableByMouse)
         layoutCreateRoom.addWidget(self.labelCreateRoom)
 
         btnCreateRoom = QPushButton("Create")
