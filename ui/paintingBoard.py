@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-
+import json
 
 # 그림판 옵션 조정 class
 class PaintingBoardWidget(QGraphicsView):
@@ -143,7 +143,7 @@ class CView(QGraphicsView):
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
         self.setStyleSheet("background-color: white;")
-        self.items = []
+        self.items_arr = []
 
         self.start = QPointF()
         self.end = QPointF()
@@ -171,9 +171,9 @@ class CView(QGraphicsView):
             if self.parent().eraseActiveCheckBox.isChecked():
                 pen = QPen(QColor(255,255,255), 20)
                 path = QPainterPath()
-                path.moveTo(self.start)
-                path.lineTo(self.end)
-                self.scene.addPath(path, pen)
+                # path.moveTo(self.start)
+                # path.lineTo(self.end)
+                # self.scene.addPath(path, pen)
                 self.start = e.pos()
                 return None
 
@@ -191,7 +191,9 @@ class CView(QGraphicsView):
 
             # 곡선 그리기
             if self.parent().drawType == 1:
+
                 # Path 이용
+
                 path = QPainterPath()
                 path.moveTo(self.start)
                 path.lineTo(self.end)
@@ -249,3 +251,49 @@ class CView(QGraphicsView):
                 self.items.clear()
                 rect = QRectF(self.start, self.end)
                 self.scene.addEllipse(rect, pen, brush)
+
+
+    def save_drawing(self):
+        items_data = []
+        for item in self.items():
+            if hasattr(item, 'path') and isinstance(item.pen(), QPen):
+                path = item.path()
+                curve_points = [{'x': path.elementAt(i).x, 'y': path.elementAt(i).y} for i in range(path.elementCount())]
+                items_data.append({
+                    'points': curve_points,
+                    'pen_color': item.pen().color().name(),
+                    'pen_width': item.pen().width()
+                })
+
+        with open('saved_drawing.json', 'w') as file:
+            json.dump(items_data, file)
+
+
+    def load_curve_data(scene):
+        # with open('curve_data.json', 'r') as file:
+        with open('saved_drawing.json', 'r') as file:
+            loaded_data = json.load(file)
+
+        for curve_item in loaded_data:
+            path = QPainterPath()
+
+            for index in range(len(curve_item['points'])):
+                if index == 0:
+                    continue
+                path.moveTo(curve_item['points'][index - 1]['x'], curve_item['points'][index - 1]['y'])
+                path.lineTo(curve_item['points'][index]['x'], curve_item['points'][index]['y'])
+
+            # for point in curve_item['points']:
+            #     path.moveTo(point['x'], point['y'])
+            #     path.lineTo(point['x'], point['y'])
+            # path.moveTo(point['x'], point['y'])
+
+            pen = QPen(QColor(curve_item['pen_color']))
+            pen.setWidth(curve_item['pen_width'])
+
+            curve = scene.addPath(path, pen)
+
+
+    def keyPressEvent(self, event) -> None:
+        if event.key() == Qt.Key_Return:
+            self.save_drawing()
