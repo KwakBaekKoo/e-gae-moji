@@ -34,6 +34,8 @@ class MyApp(QWidget):
         self.opManager = opManager.OpManager(self.onUserList, self.onChat, self.onDraw, self.onCorrectAnswer,
                                              self.onUpdateProfile)
 
+        self.paintingBoard = PaintingBoardWidget(self.sendDrawingToServer)
+
         self.initUI()
 
     def initUI(self):
@@ -47,7 +49,7 @@ class MyApp(QWidget):
         self.container_userList.setFixedHeight(175)
         self.vBox_subGameBoard_1.addWidget(self.container_userList)
 
-        self.vBox_subGameBoard_1.addWidget(PaintingBoardWidget())
+        self.vBox_subGameBoard_1.addWidget(self.paintingBoard)
 
         logo = QLabel()
         logo.setPixmap(QPixmap('assets/logo.png'))
@@ -106,8 +108,16 @@ class MyApp(QWidget):
     def onChat(self, user, msg):
         self.chatBoard.addMessage(user, msg)
 
+    def sendDrawingToServer(self, data):
+        if self.server.isInitialized:
+            self.server.drawMessage(self.userName, data)
+        if self.client.isInitialized:
+            self.server.drawMessage(self.userName, data)
+
     def onDraw(self, data):
-        print("Draw", data)
+        self.paintingBoard.drawFromServer(data)
+
+
 
 
 if __name__ == '__main__':

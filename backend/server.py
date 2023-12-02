@@ -145,3 +145,8 @@ class ServerSocket(QObject):
     def resourceInfo(self):
         print('Number of Client socket\t: ', len(self.clients))
         print('Number of Client thread\t: ', len(self.threads))
+
+
+    def drawMessage(self, user, message):
+        parcel = {"op": "draw", "user": user, "data": message}
+        self.send(json.dumps(parcel))
