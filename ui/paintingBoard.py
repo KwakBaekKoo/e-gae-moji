@@ -7,8 +7,9 @@ import json
 # 그림판 옵션 조정 class
 class PaintingBoardWidget(QGraphicsView):
 
-    def __init__(self):
+    def __init__(self, sendDrawingToServer):
         super().__init__()
+        self.sendDrawingToServer = sendDrawingToServer
 
         # 전체 폼 박스
         formbox = QHBoxLayout()
@@ -35,8 +36,8 @@ class PaintingBoardWidget(QGraphicsView):
             self.radiobtns[i].clicked.connect(self.radioClicked)
             box.addWidget(self.radiobtns[i])
 
-        self.radiobtns[0].setChecked(True)
-        self.drawType = 0
+        self.radiobtns[1].setChecked(True)
+        self.drawType = 1
 
         # 그룹박스2
         gb = QGroupBox('펜 설정')
@@ -53,6 +54,8 @@ class PaintingBoardWidget(QGraphicsView):
 
         for i in range(1, 21):
             self.combo.addItem(str(i))
+
+        self.combo.setCurrentIndex(4)
 
         label = QLabel('선색상')
         grid.addWidget(label, 1,0)
@@ -100,7 +103,7 @@ class PaintingBoardWidget(QGraphicsView):
 
 
         # 우 레이아웃 박스에 그래픽 뷰 추가
-        self.view = CView(self)
+        self.view = CView(self, self.sendDrawingToServer)
         right.addWidget(self.view)
 
         # 전체 폼박스에 좌우 박스 배치
@@ -135,15 +138,19 @@ class PaintingBoardWidget(QGraphicsView):
             self.brushcolor = color
             self.brushbtn.setStyleSheet('background-color: {}'.format( color.name()))
 
+    def drawFromServer(self, data):
+        self.view.load_curve_data(data)
+
 
 # 그림판
 class CView(QGraphicsView):
-    def __init__(self, parent):
+    def __init__(self, parent, sendDrawingToServer):
         super().__init__(parent)
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
         self.setStyleSheet("background-color: white;")
         self.items_arr = []
+        self.sendDrawingToServer = sendDrawingToServer
 
         self.start = QPointF()
         self.end = QPointF()
@@ -193,19 +200,23 @@ class CView(QGraphicsView):
             if self.parent().drawType == 1:
 
                 # Path 이용
-
                 path = QPainterPath()
                 path.moveTo(self.start)
                 path.lineTo(self.end)
                 self.scene.addPath(path, pen)
 
-                # Line 이용
-                #line = QLineF(self.start.x(), self.start.y(), self.end.x(), self.end.y())
-                #self.scene.addLine(line, pen)
-
                 # 시작점을 다시 기존 끝점으로
                 self.start = e.pos()
 
+                curve_data = []
+                curve_points = []
+                for i in range(path.elementCount()):
+                    element = path.elementAt(i)
+                    curve_points.append({'x': element.x, 'y': element.y})
+                curve_data.append({
+                    'points': curve_points
+                })
+                self.sendDrawingToServer(curve_data)
             # 사각형 그리기
             if self.parent().drawType == 2:
                 brush = QBrush(self.parent().brushcolor)
@@ -269,12 +280,8 @@ class CView(QGraphicsView):
             json.dump(items_data, file)
 
 
-    def load_curve_data(scene):
-        # with open('curve_data.json', 'r') as file:
-        with open('saved_drawing.json', 'r') as file:
-            loaded_data = json.load(file)
-
-        for curve_item in loaded_data:
+    def load_curve_data(self, data):
+        for curve_item in data:
             path = QPainterPath()
 
             for index in range(len(curve_item['points'])):
@@ -283,15 +290,10 @@ class CView(QGraphicsView):
                 path.moveTo(curve_item['points'][index - 1]['x'], curve_item['points'][index - 1]['y'])
                 path.lineTo(curve_item['points'][index]['x'], curve_item['points'][index]['y'])
 
-            # for point in curve_item['points']:
-            #     path.moveTo(point['x'], point['y'])
-            #     path.lineTo(point['x'], point['y'])
-            # path.moveTo(point['x'], point['y'])
+            pen = QPen(QColor("#000000"))
+            pen.setWidth(5)
 
-            pen = QPen(QColor(curve_item['pen_color']))
-            pen.setWidth(curve_item['pen_width'])
-
-            curve = scene.addPath(path, pen)
+            self.scene.addPath(path, pen)
 
 
     def keyPressEvent(self, event) -> None:
