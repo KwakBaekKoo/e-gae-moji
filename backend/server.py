@@ -133,7 +133,6 @@ class ServerSocket(QObject):
         self.recv_signal.emit(json.dumps({"op": "message", "user": "공지", "data": "이번에 그릴 정답은?: {}".format(answer)}))
 
     def send(self, msg):
-        time.sleep(0.1)
         try:
             for c in self.clients:
                 c.send(msg.encode())
