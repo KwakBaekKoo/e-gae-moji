@@ -47,7 +47,6 @@ class MyApp(QWidget):
         self.container_userList = QWidget()
         self.container_userList.setFixedHeight(175)
         self.vBox_subGameBoard_1.addWidget(self.container_userList)
-        self.hBox_userList = QHBoxLayout()
 
         self.vBox_subGameBoard_1.addWidget(self.paintingBoard)
 
@@ -83,13 +82,12 @@ class MyApp(QWidget):
     def onUserList(self, users):
         userList = [UserInfoWidget(i) for i in list(users)]
 
-        for i in reversed(range(self.hBox_userList.count())):
-            self.hBox_userList.itemAt(i).layout().setParent(None)
+        hBox_userList = QHBoxLayout()
 
         for user in userList:
-            self.hBox_userList.addLayout(user)
+            hBox_userList.addLayout(user)
 
-        self.container_userList.setLayout(self.hBox_userList)
+        self.container_userList.setLayout(hBox_userList)
 
     def onCorrectAnswer(self, user):
         print("Correct Answer", user, end=" ")
