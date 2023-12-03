@@ -5,7 +5,6 @@ from PyQt5.QtCore import *
 from ui.userInfo import UserInfoWidget
 from ui.paintingBoard import PaintingBoardWidget
 from ui.chatBoard import ChatBoardWidget
-from ui.buttons import ButtonBoxWidget
 from ui.sendMessage import SendMessageWidget
 from ui.joinCreateRoom import JoinCreateRoom
 from backend import client, server, opManager
@@ -58,9 +57,6 @@ class MyApp(QWidget):
         self.chatBoard = ChatBoardWidget()
         self.vBox_subGameBoard_2.addWidget(self.chatBoard)
         self.vBox_subGameBoard_2.addWidget(SendMessageWidget(self.sendMsg))
-        self.vBox_subGameBoard_2.addLayout(
-            ButtonBoxWidget(self.buttonClick, self.exitButtonClick, self.userPosition))
-
         self.hBox_gameBoard.addLayout(self.vBox_subGameBoard_1)
         self.hBox_gameBoard.addLayout(self.vBox_subGameBoard_2)
 
@@ -68,21 +64,11 @@ class MyApp(QWidget):
         self.resize(1400, 800)
         self.show()
 
-    def buttonClick(self):
-        # 무슨 버튼으로 하징
-        print('버튼 클릭')
-
     def sendMsg(self, msg):
         if self.server.isInitialized:
             self.server.sendMessage(self.userName, msg)
         if self.client.isInitialized:
             self.client.sendMessage(self.userName, msg)
-
-    def exitButtonClick(self):
-        # 서버와 연결 끊고 창 닫기
-        del self.server
-        del self.client
-        sys.exit()
 
     def startServer(self, ip):
         self.joinCreateRoom.onServerCreated(ip)
