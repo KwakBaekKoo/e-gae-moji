@@ -9,9 +9,10 @@ class UserInfoWidget(QVBoxLayout):
     def __init__(self, user):
         super().__init__()
         self.name = user["name"]
+        self.score = user["score"]
 
         self.labelName = QLabel(self.name)
-        self.labelScore = QLabel("0")
+        self.labelScore = QLabel(str(self.score))
 
         self.initUI()
 

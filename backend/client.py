@@ -5,6 +5,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 tcpClient = None
 
+
 class ClientSocket(QObject):
     recv_signal = pyqtSignal(str)
 
@@ -23,7 +24,7 @@ class ClientSocket(QObject):
         parcel = {"op": "message", "user": user, "data": message}
         self.send(json.dumps(parcel))
 
-    def send(self,msg):
+    def send(self, msg):
         global tcpClient
         if tcpClient:
             tcpClient.send(msg.encode())
@@ -33,7 +34,7 @@ class ClientSocket(QObject):
 
 
 class ClientThread(Thread):
-    def __init__(self, ip,receive):
+    def __init__(self, ip, receive):
         Thread.__init__(self)
         self.ip = ip
         self.receive = receive

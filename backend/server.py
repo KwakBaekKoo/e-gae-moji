@@ -20,7 +20,7 @@ class ServerSocket(QObject):
         self.clients = []
         self.userProfiles = []
         self.threads = []
-        self.answers = ["고양이", "사과"]
+        self.answers = ["고양이", "사과", "자동차","오리"]
         self.currentAnswer = ""
 
         self.recv_signal.connect(self.parent.updateMsg)
@@ -99,8 +99,8 @@ class ServerSocket(QObject):
         parsed = json.loads(msg)
         if self.currentAnswer == parsed["data"]:
             for i, item in enumerate(self.userProfiles):
-                if item["name"] == userName:
-                    self.userProfiles[i]["score"] = 5
+                if item["name"] == "Guest {}".format(userName):
+                    self.userProfiles[i]["score"] += 5
 
             self.updateUser()
             self.notifyCorrectAnswer(userName, self.currentAnswer)

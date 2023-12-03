@@ -97,6 +97,9 @@ class MyApp(QWidget):
     def onUserList(self, users):
         userList = [UserInfoWidget(i) for i in list(users)]
 
+        for i in reversed(range(self.hBox_userList.count())):
+            self.hBox_userList.itemAt(i).layout().setParent(None)
+
         for user in userList:
             self.hBox_userList.addLayout(user)
 

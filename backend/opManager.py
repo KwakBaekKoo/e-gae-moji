@@ -10,6 +10,7 @@ class OpManager:
         self.onUpdateProfile = onUpdateProfile
 
     def parse(self, msg):
+        print(msg)
         parcel = json.loads(msg)
         if parcel["op"] == "user_list":
             self.onUserList(parcel["users"])
