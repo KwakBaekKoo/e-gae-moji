@@ -25,6 +25,7 @@ class MyApp(QWidget):
         self.userName = ""
         self.port = 4001
 
+        self.userCnt = 0
         self.client = client.ClientSocket(self)
 
         self.joinCreateRoom = JoinCreateRoom(lambda: self.server.start(self.ip, self.port),
@@ -43,12 +44,8 @@ class MyApp(QWidget):
         self.vBox_subGameBoard_2 = QVBoxLayout()  # verical layout 2: 로고, 채팅창, 시작(준비)버튼, 나가기버튼이 있는 레이아웃
         self.vBox_subGameBoard_1.setAlignment(Qt.AlignBottom)
         self.vBox_subGameBoard_2.setAlignment(Qt.AlignTop)
-
-        self.container_userList = QWidget()
-        self.container_userList.setFixedHeight(175)
-        self.vBox_subGameBoard_1.addWidget(self.container_userList)
-        self.hBox_userList = QHBoxLayout()
-
+        self.container_userList = QHBoxLayout()
+        self.vBox_subGameBoard_1.addLayout(self.container_userList)
         self.vBox_subGameBoard_1.addWidget(self.paintingBoard)
 
         logo = QLabel()
@@ -81,15 +78,17 @@ class MyApp(QWidget):
         self.userName = name
 
     def onUserList(self, users):
-        userList = [UserInfoWidget(i) for i in list(users)]
+        userListIdx = self.userCnt
+        for user in range(len(users) - self.userCnt):
+            self.container_userList.addLayout(UserInfoWidget(users[userListIdx]))
+            userListIdx += 1
+            print('user:', user)
+        self.userCnt = len(users)
 
-        for i in reversed(range(self.hBox_userList.count())):
-            self.hBox_userList.itemAt(i).layout().setParent(None)
-
-        for user in userList:
-            self.hBox_userList.addLayout(user)
-
-        self.container_userList.setLayout(self.hBox_userList)
+        print('user list updated', users)
+        
+        for user in range(len(users)):
+            self.container_userList.itemAt(user).labelScore.setText(str(users[user]['score']))
 
     def onCorrectAnswer(self, user):
         print("Correct Answer", user, end=" ")
