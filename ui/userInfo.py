@@ -3,25 +3,36 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+
 class UserInfoWidget(QVBoxLayout):
 
-    def __init__(self, name):
+    def __init__(self, user):
         super().__init__()
-        self.name = name
+        self.name = user["name"]
+        self.score = user["score"]
+
+        self.labelName = QLabel(self.name)
+        self.labelScore = QLabel(str(self.score))
+
         self.initUI()
 
-    def initUI(self):        
+    def initUI(self):
         userImage = UserImage()
-        userName = QLabel(self.name)
+
         if self.name == 'Host':
-            userName.setStyleSheet('color: blue')
-        userName.setContentsMargins(0, 0, 0, 20)
-            
+            self.labelName.setStyleSheet('color: blue')
+        self.labelName.setContentsMargins(0, 0, 0, 0)
+        self.labelScore.setContentsMargins(0, 0, 0, 0)
+
         self.addLayout(userImage)
-        self.addWidget(userName)
+        self.addWidget(self.labelName)
+        self.addWidget(self.labelScore)
 
         self.setAlignment(userImage, Qt.AlignCenter)
-        self.setAlignment(userName, Qt.AlignCenter)
+        self.setAlignment(self.labelName, Qt.AlignCenter)
+        self.setAlignment(self.labelScore, Qt.AlignCenter)
+
+
 
 class UserImage(QHBoxLayout):
 

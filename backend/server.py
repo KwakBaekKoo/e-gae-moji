@@ -3,6 +3,7 @@ from threading import Thread
 from socket import *
 from PyQt5.QtCore import pyqtSignal, QObject
 import random
+import time
 
 
 class ServerSocket(QObject):
@@ -17,9 +18,10 @@ class ServerSocket(QObject):
         self.parent = parent
         self.bListen = False
         self.clients = []
-        self.clientsName = []
+        self.userProfiles = []
         self.threads = []
-        self.answers = ["고양이", "사과"]
+        self.answers = ["고양이", "사과", "자동차","오리"]
+        self.currentAnswer = ""
 
         self.recv_signal.connect(self.parent.updateMsg)
         self.start_signal.connect(self.parent.startServer)
@@ -41,6 +43,7 @@ class ServerSocket(QObject):
             self.t.start()
             print('Server Listening...')
 
+        self.userProfiles.append({"name": "Host", "score": 0})
         self.start_signal.emit("{}:{}".format(ip, port))
         self.updateProfile(True, "Host", None)
         self.updateUser()
@@ -64,7 +67,7 @@ class ServerSocket(QObject):
             else:
                 self.clients.append(client)
                 name = "Guest {}".format(addr[1])
-                self.clientsName.append(name)
+                self.userProfiles.append({"name": name, "score": 0})
                 self.updateProfile(False, name, client)
                 self.updateUser()
                 t = Thread(target=self.receive, args=(addr, client))
@@ -88,8 +91,21 @@ class ServerSocket(QObject):
                 if msg:
                     self.send(msg)
                     self.recv_signal.emit(msg)
+                    self.checkAnswer(addr[1], msg)
 
         self.removeClient(addr, client)
+
+    def checkAnswer(self, userName, msg):
+        parsed = json.loads(msg)
+        if self.currentAnswer == parsed["data"]:
+            for i, item in enumerate(self.userProfiles):
+                if item["name"] == "Guest {}".format(userName):
+                    self.userProfiles[i]["score"] += 5
+
+            self.updateUser()
+            self.notifyCorrectAnswer(userName, self.currentAnswer)
+            self.answers.remove(self.currentAnswer)
+            self.sendAnswerToHost()
 
     def updateProfile(self, isHost, name, client):
         parcel = {"op": "profile", "data": name}
@@ -99,7 +115,7 @@ class ServerSocket(QObject):
             client.send(json.dumps(parcel).encode())
 
     def updateUser(self):
-        parcel = {"op": "user_list", "user": json.dumps(["Host", *self.clientsName])}
+        parcel = {"op": "user_list", "users": self.userProfiles}
         self.send(json.dumps(parcel))
         self.recv_signal.emit(json.dumps(parcel))
 
@@ -108,11 +124,16 @@ class ServerSocket(QObject):
         self.send(json.dumps(parcel))
         self.recv_signal.emit(json.dumps(parcel))
 
+    def notifyCorrectAnswer(self, userName, answer):
+        self.send(json.dumps({"op": "message", "user": "공지", "data": "{} 정답!! {}".format(userName, answer)}))
+
     def sendAnswerToHost(self):
         answer = random.choice(self.answers)
+        self.currentAnswer = answer
         self.recv_signal.emit(json.dumps({"op": "message", "user": "공지", "data": "이번에 그릴 정답은?: {}".format(answer)}))
 
     def send(self, msg):
+        time.sleep(0.1)
         try:
             for c in self.clients:
                 c.send(msg.encode())
@@ -145,7 +166,6 @@ class ServerSocket(QObject):
     def resourceInfo(self):
         print('Number of Client socket\t: ', len(self.clients))
         print('Number of Client thread\t: ', len(self.threads))
-
 
     def drawMessage(self, user, message):
         parcel = {"op": "draw", "user": user, "data": message}
