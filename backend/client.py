@@ -54,7 +54,3 @@ class ClientThread(Thread):
                 msg = str(recv, encoding='utf-8')
                 if msg:
                     self.receive(msg)
-
-    # data = tcpClient.recv(BUFFER_SIZE)
-    # print(data.decode("utf-8"))
-    # tcpClient.close()

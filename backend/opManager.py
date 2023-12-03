@@ -10,10 +10,9 @@ class OpManager:
         self.onUpdateProfile = onUpdateProfile
 
     def parse(self, msg):
-        print(msg)
         parcel = json.loads(msg)
         if parcel["op"] == "user_list":
-            self.onUserList(json.loads(parcel["user"]))
+            self.onUserList(parcel["users"])
         elif parcel["op"] == "correct_answer":
             self.onCorrectAnswer(parcel["user"])
         elif parcel["op"] == "message":
